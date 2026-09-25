@@ -108,6 +108,15 @@ td.c{text-align:center;white-space:nowrap}td.lvl{text-align:center;font-weight:7
 .prio ol{margin:6px 0 0 18px;padding:0}
 .bar{height:10px;background:#e3e3e3;border-radius:5px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--blue)}
 footer{color:#888;font-size:.8rem;margin-top:20px}
+.wheel{width:100%;max-width:600px;display:block;margin:6px auto 0}
+.wheel text{font-family:-apple-system,Helvetica,Arial,sans-serif}
+.wheel .wc,.wheel .wl,.wheel .cn,.wheel .cs{text-anchor:middle}
+.wheel .wc{font-size:17px;font-weight:700;fill:#222}.wheel .wc.s{font-size:12px}
+.wheel .wl{font-size:14px;fill:#333}.wheel .dl{font-size:17px;font-weight:700}.wheel .dw{font-size:12px;fill:#777}
+.wheel .cn{font-size:40px;font-weight:800;fill:#1F4E79}.wheel .cd{font-size:20px;font-weight:600;fill:#555}.wheel .cs{font-size:11px;letter-spacing:.12em;fill:#777}
+.wheel g.w{cursor:pointer}.wheel g.w path{stroke:#fff;stroke-width:1.5;transition:opacity .15s}.wheel g.w:hover path{opacity:.8}
+.tip{text-align:center;min-height:1.4em;font-weight:600;color:#1F4E79;margin:4px 0 0}
+.hint{text-align:center;color:#666;font-size:.9rem;margin:2px 0 14px}
 @media print{body{background:#fff}.wrap{max-width:none}}
 """
 
@@ -119,6 +128,73 @@ def fmt_score(s):
         return ""
     s = float(s)
     return f"{int(s) if s == int(s) else s}/10"
+
+
+# ------------------------------------------------------------------ wheel (compass)
+import math
+SHORT = {"Algebra": "Algebra", "Advanced Math": "Advanced Math",
+         "Problem-Solving & Data Analysis": "Data Analysis", "Geometry & Trigonometry": "Geometry & Trig"}
+RING = {"Algebra": "#1F4E79", "Advanced Math": "#7B3F99",
+        "Problem-Solving & Data Analysis": "#C58B00", "Geometry & Trigonometry": "#2E7D32"}
+FILL = {None: "#e9e9e9", 0: "#f5b7b1", 1: "#f8d7a8", 2: "#b7e1b1"}
+
+def _pt(r, a):
+    a = math.radians(a - 90)
+    return r * math.cos(a), r * math.sin(a)
+
+def _arc(r0, r1, a0, a1):
+    large = 1 if a1 - a0 > 180 else 0
+    x0, y0 = _pt(r1, a0); x1, y1 = _pt(r1, a1); x2, y2 = _pt(r0, a1); x3, y3 = _pt(r0, a0)
+    return (f"M{x0:.1f},{y0:.1f} A{r1},{r1} 0 {large} 1 {x1:.1f},{y1:.1f} "
+            f"L{x2:.1f},{y2:.1f} A{r0},{r0} 0 {large} 0 {x3:.1f},{y3:.1f}Z")
+
+def wheel_svg(st, comps):
+    doms = []
+    for c in comps:
+        if not doms or doms[-1][0] != c["domain"]:
+            doms.append((c["domain"], c["weight"], []))
+        doms[-1][2].append(c)
+    w = {d: float(str(wt).replace("%", "").strip() or 25) for d, wt, _ in doms}
+    tot = sum(w.values())
+    R0, R1, RR = 78, 190, 200
+    out = []; labels = []; a = 0.0
+    n_val = sum(1 for c in comps if st["comps"][c["code"]]["level"] == 2)
+    for dom, wt, cs in doms:
+        step = 360 / len(comps)          # every competence gets the same wedge
+        span = step * len(cs)
+        # domain ring
+        out.append(f'<path d="{_arc(RR, RR + 9, a + .6, a + span - .6)}" fill="{RING.get(dom, "#555")}"/>')
+        for i, c in enumerate(cs):
+            b0, b1 = a + i * step + .7, a + (i + 1) * step - .7
+            d = st["comps"][c["code"]]; lv = d["level"]
+            tip = f'{c["code"]} · {c["name"]} — ' + ("not yet covered" if lv is None else
+                  f'level {lv} ({fmt_score(d["best"])})')
+            mid = (b0 + b1) / 2
+            narrow = step < 12
+            rt = (R0 + R1) / 2 + (18 if narrow else 0)
+            tx, ty = _pt(rt, mid)
+            if narrow:   # radial text for thin wedges
+                rot = mid - 90 if mid < 180 else mid + 90
+                txt = (f'<text x="{tx:.1f}" y="{ty:.1f}" transform="rotate({rot:.1f} {tx:.1f} {ty:.1f})" '
+                       f'class="wc s">{esc(c["code"])}{"" if lv is None else " · " + str(lv)}</text>')
+            else:
+                txt = (f'<text x="{tx:.1f}" y="{ty - 4:.1f}" class="wc">{esc(c["code"])}</text>'
+                       + ("" if lv is None else f'<text x="{tx:.1f}" y="{ty + 14:.1f}" class="wl">{lv}</text>'))
+            out.append(f'<g class="w" data-tip="{esc(tip)}"><title>{esc(tip)}</title>'
+                       f'<path d="{_arc(R0, R1, b0, b1)}" fill="{FILL[lv]}"/>{txt}</g>')
+        # domain label outside the ring
+        m = a + span / 2
+        lx, ly = _pt(RR + 22, m)
+        sx = math.sin(math.radians(m))
+        anchor = "middle" if abs(sx) < .3 else ("start" if sx > 0 else "end")
+        dy = -12 if ly < -150 else (16 if ly > 150 else 0)
+        labels.append(f'<text x="{lx:.1f}" y="{ly + dy:.1f}" text-anchor="{anchor}" class="dl" fill="{RING.get(dom, "#555")}">{esc(SHORT.get(dom, dom))}</text>'
+                      f'<text x="{lx:.1f}" y="{ly + dy + 15:.1f}" text-anchor="{anchor}" class="dw">{esc(wt)} of the test</text>')
+        a += span
+    center = (f'<circle r="{R0 - 6}" fill="#fff"/><text y="6" class="cn">{n_val}<tspan class="cd"> / {len(comps)}</tspan></text>'
+              f'<text y="30" class="cs">VALIDATED</text>')
+    return (f'<svg class="wheel" viewBox="-318 -262 636 530" role="img" aria-label="Competence wheel">'
+            + "".join(out) + center + "".join(labels) + "</svg>")
 
 def student_page(st, comps, cfg, today):
     domains = []
@@ -161,11 +237,13 @@ def student_page(st, comps, cfg, today):
 <div class="card"><b>Mock 2 (P13)</b><span>{esc(st['mock2']) or '—'}</span></div>
 <div class="card"><b>Target</b><span>{esc(st['target']) or '—'}</span></div>
 </div>
+{wheel_svg(st, comps)}
+<p class="tip" id="tip"></p><p class="hint">Each wedge is one competence. Tap a wedge to see its name and your result.</p>
+<div class="prio"><b>Next steps</b> — what to work on / retake, most SAT-heavy first:{prio_html}</div>
 <table><thead><tr><th>Code</th><th>Competence</th><th>Session</th><th>Test 1</th><th>Retake</th><th>Level</th></tr></thead>
 <tbody>{''.join(rows)}</tbody></table>
-<div class="prio"><b>Priority list</b> — what to retake, most SAT-heavy first:{prio_html}</div>
 <footer>{esc(cfg['teacher'])} · Best level is kept after a retake · 10 questions per test · This page is private: do not share the link.</footer>
-</div></body></html>"""
+</div><script>document.querySelectorAll('.wheel g.w').forEach(g=>g.addEventListener('click',()=>{{document.getElementById('tip').textContent=g.dataset.tip}}))</script></body></html>"""
     return page
 
 def teacher_index(students, comps, cfg, today):
