@@ -1,0 +1,6 @@
+.DS_Store
+_to_delete/
+overview.html
+*.aux
+*.log
+*.synctex.gz

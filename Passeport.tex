@@ -1,0 +1,132 @@
+\documentclass[10pt]{article}
+\usepackage{satstyle}
+\geometry{margin=14mm,top=12mm,bottom=12mm}
+\pagestyle{empty}
+\renewcommand{\arraystretch}{1.3}
+
+% ---------- one passport page ----------
+% \passport{Name}{Class}{URL}{Diagnostic}{Mock1}{Mock2}{rows}
+% rows: use \prow{Code}{Competence}{Session}{T1}{T2}{Level} with levels as \lvl{n} or empty
+\newcommand{\prow}[6]{#1 & #2 & #3 & #4 & #5 & #6\\\hline}
+\newcommand{\dom}[1]{\multicolumn{6}{l}{\cellcolor{satblue!12}\textbf{#1}}\\\hline}
+
+\newcommand{\passport}[7]{%
+\begin{minipage}[t]{0.72\textwidth}
+{\color{satblue}\LARGE\bfseries SAT Math — Competence Passport}\\[3pt]
+{\large\textbf{Student:} #1 \hfill \textbf{Class:} #2}\\[3pt]
+{\small\color{black!60}Levels: \colorbox{satgreen!35}{\textbf{2}} validated (9--10/10) · \colorbox{satorange!35}{\textbf{1}} in progress (6--8/10) · \colorbox{satred!30}{\textbf{0}} not validated (0--5/10) · blank = not yet covered. Best level is kept after a retake.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.24\textwidth}
+\raggedleft\vspace{-2pt}\qrcode[height=2.3cm]{#3}\\[1pt]{\tiny\color{black!60}live version}
+\end{minipage}
+
+\vspace{6pt}
+\begin{center}
+\begin{tabular}{|c|p{7.3cm}|c|c|c|c|}
+\hline
+\rowcolor{satgrey}\textbf{Code} & \textbf{Competence} & \textbf{Session} & \textbf{Test 1} & \textbf{Retake} & \textbf{Level}\\\hline
+\dom{Algebra — 35\,\%}
+#7
+\end{tabular}
+\end{center}
+
+\vspace{4pt}
+\begin{center}
+\begin{tabular}{|p{3.6cm}|p{3.6cm}|p{3.6cm}|p{3.6cm}|}
+\hline
+\rowcolor{satgrey}\textbf{Diagnostic (P1)} & \textbf{Mock 1 (P8)} & \textbf{Mock 2 (P13)} & \textbf{Target score}\\\hline
+Module 1 of PT4 & PT5 Math, 70 min & PT6 Math, 70 min & \\
+#4 & #5 & #6 & \rule{0pt}{14pt}\\\hline
+\end{tabular}
+\end{center}
+\vspace{2pt}
+{\small\textbf{Priority list} (competences at 0 or 1, most SAT-heavy first): \rule{0.6\textwidth}{0.3pt}}\\[4pt]
+{\small\textbf{Next retake planned:} \rule{4cm}{0.3pt} \hfill \textbf{Teacher:} \rule{4cm}{0.3pt} \hfill \textbf{Updated:} \rule{3cm}{0.3pt}}
+}
+
+\begin{document}
+
+% ==================== BLANK PASSPORT ====================
+\passport{\rule{6cm}{0.3pt}}{\rule{2cm}{0.3pt}}{https://davidheda.github.io/SAT-Passport-2026/}{~}{~}{~}{%
+\prow{A1}{Linear equations in one variable}{S1}{~}{~}{~}
+\prow{A2}{Linear equations in two variables}{S2}{~}{~}{~}
+\prow{A3}{Linear functions}{S2}{~}{~}{~}
+\prow{A4}{Systems of two linear equations}{S3}{~}{~}{~}
+\prow{A5}{Linear inequalities}{S3}{~}{~}{~}
+\dom{Advanced Math — 35\,\%}
+\prow{M1}{Equivalent expressions}{S4}{~}{~}{~}
+\prow{M2}{Nonlinear equations and systems}{S5}{~}{~}{~}
+\prow{M3}{Nonlinear functions}{S6}{~}{~}{~}
+\dom{Problem-Solving \& Data Analysis — 15\,\%}
+\prow{D1}{Ratios, rates, proportions, units}{S7}{~}{~}{~}
+\prow{D2}{Percentages}{S7}{~}{~}{~}
+\prow{D3}{One-variable data}{S8}{~}{~}{~}
+\prow{D4}{Two-variable data, scatterplots}{S8}{~}{~}{~}
+\prow{D5}{Probability, conditional probability}{S9}{~}{~}{~}
+\prow{D6}{Inference, margin of error}{S9}{~}{~}{~}
+\prow{D7}{Evaluating statistical claims}{S9}{~}{~}{~}
+\dom{Geometry \& Trigonometry — 15\,\%}
+\prow{G1}{Area and volume}{S10}{~}{~}{~}
+\prow{G2}{Lines, angles, triangles}{S10}{~}{~}{~}
+\prow{G3}{Right triangles and trigonometry}{S10}{~}{~}{~}
+\prow{G4}{Circles}{S10}{~}{~}{~}
+}
+
+% ==================== FILLED EXAMPLE (after P3) ====================
+\newpage
+\passport{Sample Student}{Y11 SAT}{https://davidheda.github.io/SAT-Passport-2026/3e794d96/}{14 / 22 (64\,\%)}{~}{~}{%
+\prow{A1}{Linear equations in one variable}{S1}{7/10}{~}{\lvl{1}}
+\prow{A2}{Linear equations in two variables}{S2}{~}{~}{~}
+\prow{A3}{Linear functions}{S2}{~}{~}{~}
+\prow{A4}{Systems of two linear equations}{S3}{~}{~}{~}
+\prow{A5}{Linear inequalities}{S3}{~}{~}{~}
+\dom{Advanced Math — 35\,\%}
+\prow{M1}{Equivalent expressions}{S4}{~}{~}{~}
+\prow{M2}{Nonlinear equations and systems}{S5}{~}{~}{~}
+\prow{M3}{Nonlinear functions}{S6}{~}{~}{~}
+\dom{Problem-Solving \& Data Analysis — 15\,\%}
+\prow{D1}{Ratios, rates, proportions, units}{S7}{~}{~}{~}
+\prow{D2}{Percentages}{S7}{~}{~}{~}
+\prow{D3}{One-variable data}{S8}{~}{~}{~}
+\prow{D4}{Two-variable data, scatterplots}{S8}{~}{~}{~}
+\prow{D5}{Probability, conditional probability}{S9}{~}{~}{~}
+\prow{D6}{Inference, margin of error}{S9}{~}{~}{~}
+\prow{D7}{Evaluating statistical claims}{S9}{~}{~}{~}
+\dom{Geometry \& Trigonometry — 15\,\%}
+\prow{G1}{Area and volume}{S10}{~}{~}{~}
+\prow{G2}{Lines, angles, triangles}{S10}{~}{~}{~}
+\prow{G3}{Right triangles and trigonometry}{S10}{~}{~}{~}
+\prow{G4}{Circles}{S10}{~}{~}{~}
+}
+\vspace{4pt}
+{\small\color{satred}\textbf{Example filled after the diagnostic and Test A1:} 7/10 on A1 (missed Q5 — LCD on one side only, Q9 and Q10 — number of solutions) $\to$ level 1; retake version B planned in P14 after redoing Method 3 and Method 5.}
+
+% ==================== END-OF-PROGRAMME EXAMPLE ====================
+\newpage
+\passport{Sample Student}{Y11 SAT}{https://davidheda.github.io/SAT-Passport-2026/3e794d96/}{14 / 22 (64\,\%)}{29 / 44 (66\,\%)}{35 / 44 (80\,\%)}{%
+\prow{A1}{Linear equations in one variable}{S1}{7/10}{10/10}{\lvl{2}}
+\prow{A2}{Linear equations in two variables}{S2}{9/10}{~}{\lvl{2}}
+\prow{A3}{Linear functions}{S2}{8/10}{9/10}{\lvl{2}}
+\prow{A4}{Systems of two linear equations}{S3}{6/10}{8/10}{\lvl{1}}
+\prow{A5}{Linear inequalities}{S3}{9/10}{~}{\lvl{2}}
+\dom{Advanced Math — 35\,\%}
+\prow{M1}{Equivalent expressions}{S4}{5/10}{7/10}{\lvl{1}}
+\prow{M2}{Nonlinear equations and systems}{S5}{4/10}{5/10}{\lvl{0}}
+\prow{M3}{Nonlinear functions}{S6}{7/10}{~}{\lvl{1}}
+\dom{Problem-Solving \& Data Analysis — 15\,\%}
+\prow{D1}{Ratios, rates, proportions, units}{S7}{10/10}{~}{\lvl{2}}
+\prow{D2}{Percentages}{S7}{9/10}{~}{\lvl{2}}
+\prow{D3}{One-variable data}{S8}{8/10}{~}{\lvl{1}}
+\prow{D4}{Two-variable data, scatterplots}{S8}{9/10}{~}{\lvl{2}}
+\prow{D5}{Probability, conditional probability}{S9}{7/10}{~}{\lvl{1}}
+\prow{D6}{Inference, margin of error}{S9}{6/10}{~}{\lvl{1}}
+\prow{D7}{Evaluating statistical claims}{S9}{9/10}{~}{\lvl{2}}
+\dom{Geometry \& Trigonometry — 15\,\%}
+\prow{G1}{Area and volume}{S10}{9/10}{~}{\lvl{2}}
+\prow{G2}{Lines, angles, triangles}{S10}{8/10}{~}{\lvl{1}}
+\prow{G3}{Right triangles and trigonometry}{S10}{5/10}{~}{\lvl{0}}
+\prow{G4}{Circles}{S10}{7/10}{~}{\lvl{1}}
+}
+\vspace{4pt}
+{\small\color{satred}\textbf{Example at the end of the programme (P14):} the priority list writes itself — M2 and G3 at 0, then A4 and M1 at 1 in the 35\,\% domains. The two-week plan before the real test targets those four codes only.}
+\end{document}
